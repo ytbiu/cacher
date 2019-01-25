@@ -1,11 +1,11 @@
 package cac
 
 import (
+	"github.com/stretchr/testify/assert"
+	"log"
 	"reflect"
 	"testing"
 	"time"
-	"log"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewCacTable(t *testing.T) {
@@ -23,8 +23,8 @@ func TestNewCacTable(t *testing.T) {
 				name: "test",
 			},
 			want: &cacTable{
-				name:               "test",
-				key2Cache:          make(map[string]*cac),
+				name:      "test",
+				key2Cache: make(map[string]*cac),
 			},
 		},
 	}
@@ -58,7 +58,7 @@ func Test_cacTable_Add(t *testing.T) {
 			args: args{
 				key:    "key",
 				val:    "val",
-				expire: time.Second*2,
+				expire: time.Second * 2,
 				cbs: []func(){func() {
 					log.Println("call back doing")
 				}},
@@ -72,19 +72,19 @@ func Test_cacTable_Add(t *testing.T) {
 	}
 
 	value, find := ct.Get("key")
-	assert.Equal(t,value,"val")
-	assert.True(t,find,true)
+	assert.Equal(t, value, "val")
+	assert.True(t, find, true)
 
-	time.Sleep(time.Second*3)
+	time.Sleep(time.Second * 3)
 	value_, find_ := ct.Get("key")
-	assert.Nil(t,value_)
-	assert.False(t,find_)
+	assert.Nil(t, value_)
+	assert.False(t, find_)
 
 }
 
 func Test_cacTable_Delete(t *testing.T) {
 	ct := NewCacTable("delete")
-	ct.Add("key","delete",time.Second*10)
+	ct.Add("key", "delete", time.Second*10)
 
 	type args struct {
 		key string
@@ -104,22 +104,22 @@ func Test_cacTable_Delete(t *testing.T) {
 	}
 
 	value, find := ct.Get("key")
-	assert.Equal(t,value,"delete")
-	assert.True(t,find,true)
+	assert.Equal(t, value, "delete")
+	assert.True(t, find, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.c.Delete(tt.args.key)
 		})
 	}
 	value_, find_ := ct.Get("key")
-	assert.Nil(t,value_)
-	assert.False(t,find_)
+	assert.Nil(t, value_)
+	assert.False(t, find_)
 }
 
 func Test_cacTable_Get(t *testing.T) {
 
 	ct := NewCacTable("get")
-	ct.Add("k","v",time.Second*2)
+	ct.Add("k", "v", time.Second*2)
 
 	type args struct {
 		key string
@@ -132,18 +132,18 @@ func Test_cacTable_Get(t *testing.T) {
 		want1 bool
 	}{
 		{
-			name:  "test_get",
-			c:     ct,
-			args:  args{
+			name: "test_get",
+			c:    ct,
+			args: args{
 				key: "k",
 			},
 			want:  "v",
 			want1: true,
 		},
 		{
-			name:  "test_get_expire",
-			c:     ct,
-			args:  args{
+			name: "test_get_expire",
+			c:    ct,
+			args: args{
 				key: "k",
 			},
 			want:  nil,
@@ -159,14 +159,14 @@ func Test_cacTable_Get(t *testing.T) {
 			if got1 != tt.want1 {
 				t.Errorf("cacTable.Get() got1 = %v, want %v", got1, tt.want1)
 			}
-			time.Sleep(time.Second*2)
+			time.Sleep(time.Second * 2)
 		})
 	}
 }
 
 func Test_cacTable_Reset(t *testing.T) {
 	ct := NewCacTable("reset")
-	ct.Add("k","v",time.Second)
+	ct.Add("k", "v", time.Second)
 
 	type args struct {
 		key    string
@@ -182,26 +182,25 @@ func Test_cacTable_Reset(t *testing.T) {
 			c:    ct,
 			args: args{
 				key:    "k",
-				expire: time.Second*3,
+				expire: time.Second * 3,
 			},
 		},
 	}
 
-
 	value, find := ct.Get("k")
-	assert.True(t,find)
-	assert.Equal(t,value,"v")
+	assert.True(t, find)
+	assert.Equal(t, value, "v")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			success := tt.c.Reset(tt.args.key, tt.args.expire)
-			assert.True(t,success)
+			assert.True(t, success)
 
 		})
 	}
 
-	time.Sleep(time.Second*2)
+	time.Sleep(time.Second * 2)
 	value_, find_ := ct.Get("k")
-	assert.True(t,find_)
-	assert.Equal(t,value_,"v")
+	assert.True(t, find_)
+	assert.Equal(t, value_, "v")
 }
