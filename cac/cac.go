@@ -22,12 +22,10 @@ func newCac(key string, val interface{}, expire time.Duration, deleteFn func(key
 	}
 
 	c.expireTimer = time.AfterFunc(expire, func() {
-		go func() {
-			deleteFn(key)
-			for _, cb := range cbs {
-				cb()
-			}
-		}()
+		deleteFn(key)
+		for _, cb := range cbs {
+			cb()
+		}
 	})
 	return c
 }

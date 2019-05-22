@@ -37,7 +37,6 @@ func (c *cacTable) Add(key string, val interface{}, expire time.Duration, cbs ..
 	c.Lock()
 	c.key2Cache[key] = newCache
 	c.Unlock()
-
 }
 
 func (c *cacTable) Delete(key string) {
